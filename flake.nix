@@ -15,12 +15,14 @@
       (system:
         function (import nixpkgs {
           inherit system;
-          config.allowUnfree = true;
         }));
   in {
+    lib = {
+      optionsDocHtml = import ./doc.nix;
+    };
     packages = forAllSystems (pkgs: {
-      default =
-        (import ./doc.nix)
+      example =
+        self.lib.optionsDocHtml
         {
           inherit pkgs;
           modules = [./example.nix];
