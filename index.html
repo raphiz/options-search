@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/holiday.css@0.11.2"
+    />
+    <title>{{title}}</title>
+
+    <style>
+      :root {
+        /* Sizes */
+        --max-body-width: 80%;
+      }
+      table {
+        width: 100%;
+        display: table;
+      }
+      dialog {
+        max-width: 42rem;
+        width: 80%;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>{{title}}</h1>
+      <input type="search" id="search" name="search" placeholder="Search" />
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Title</th>
+            <th scope="col">Description</th>
+            <th scope="col">Type</th>
+          </tr>
+        </thead>
+        <tbody id="options">
+          {% for option in options %}
+          <tr
+            data-title="{{option.title|escape}}"
+            data-description="{{option.get('description')|escape}}"
+            data-type="{{option.get('type')|escape}}"
+            data-default="{{option.get('default')|escape}}"
+            data-example="{{option.get('example')|escape}}"
+            data-declared_by="{{option.get('declared_by')|escape}}"
+          >
+            <td>{{option.title}}</td>
+            <td>{{option.description}}</td>
+            <td>{{option.type}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </main>
+    <dialog id="dialog"></dialog>
+    <script
+      type="text/javascript"
+      src="https://unpkg.com/js-search@1.3.7/dist/umd/js-search.min.js"
+    ></script>
+    <script>
+      // show modal when element in list is clicked
+      const dialog = document.getElementById("dialog");
+      function showDialog(dataset) {
+        const innerHtml = `<form >
+        <h3>${dataset.title}</h3>
+        ${
+          (dataset.description &&
+            `<h4>Description</h4><p>${dataset.description}</p>`) ||
+          ""
+        }
+        ${(dataset.type && `<h4>Type</h4><p>${dataset.type}</p>`) || ""}
+        ${
+          (dataset.default &&
+            `<h4>Default</h4><pre><code>${dataset.default}</code></pre>`) ||
+          ""
+        }
+        ${
+          (dataset.example &&
+            `<h4>Example</h4><pre><code>${dataset.example}</code></pre>`) ||
+          ""
+        }
+
+        ${
+          (dataset.declared_by &&
+            `<h4>Declared by</h4><p>${dataset.declared_by}</p>`) ||
+          ""
+        }
+        <footer>
+          <button value="cancel" formmethod="dialog">Close</button>
+        </footer>
+      </form>`;
+        dialog.innerHTML = innerHtml;
+        dialog.showModal();
+      }
+
+      document.querySelector("table").addEventListener("click", (event) => {
+        const closestEntry = event.target.closest("[data-title]");
+        showDialog(closestEntry.dataset);
+      });
+
+      // search functionallity
+      const searchInput = document.getElementById("search");
+      search = new JsSearch.Search("title");
+      search.indexStrategy = new JsSearch.PrefixIndexStrategy();
+      search.searchIndex = new JsSearch.UnorderedSearchIndex();
+      search.addIndex("title");
+      search.addIndex("description");
+
+      const executeSearch = () => {
+        if (!searchInput.value.trim()) {
+          for (const child of document.getElementById("options").children) {
+            child.style.display = "";
+          }
+        } else {
+          const results = search
+            .search(searchInput.value)
+            .map((it) => it.title);
+          for (const child of document.getElementById("options").children) {
+            if (results.includes(child.dataset.title)) {
+              child.style.display = "";
+            } else {
+              child.style.display = "none";
+            }
+          }
+        }
+      };
+
+      const debounced = (func, timeout = 100) => {
+        let timer;
+        return (...args) => {
+          if (!timer) {
+            func.apply(this, args);
+          }
+          clearTimeout(timer);
+          timer = setTimeout(() => {
+            timer = undefined;
+          }, timeout);
+        };
+      };
+
+      searchInput.addEventListener("keyup", debounced(executeSearch));
+      searchInput.addEventListener("search", debounced(executeSearch));
+
+      initSearchFromDom = () => {
+        documents = [];
+        for (const child of document.getElementById("options").children) {
+          documents.push({
+            title: child.dataset.title,
+            description: child.dataset.description,
+          });
+        }
+        search.addDocuments(documents);
+        executeSearch();
+      };
+      initSearchFromDom();
+    </script>
+  </body>
+</html>
