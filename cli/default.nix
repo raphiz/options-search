@@ -1,12 +1,22 @@
 {
   pkgs,
-  options,
+  options ? null,
+  modules ? null,
   name ? "options-search",
   sourceMappings ? [],
   warningsAreErrors ? true,
   ...
-}: let
+}:
+assert pkgs.lib.assertMsg ((options != null) != (modules != null)) "Either `options` or `modules` must be provided"; let
   inherit (pkgs) lib;
+  opts =
+    (
+      if (options != null)
+      then options
+      else (lib.evalModules {inherit modules;}).options
+    )
+    # Ensure that _module.args is not visible
+    // {_module.args.internal = lib.mkForce true;};
 
   # TODO: support mappings derived via lockfile
   # but must not trigger lazy evaluation of inputs!
@@ -42,7 +52,7 @@
     else path;
   optionsDoc = pkgs.nixosOptionsDoc {
     inherit warningsAreErrors;
-    options = options // {_module.args.internal = lib.mkForce true;};
+    options = opts;
     transformOptions = opt: opt // {declarations = lib.map transformDeclarations opt.declarations;};
   };
 

@@ -1,11 +1,23 @@
 {
   pkgs,
-  options,
+  options ? null,
+  modules ? null,
   title ? "Documentation",
   ...
-}: let
+}:
+assert pkgs.lib.assertMsg ((options != null) != (modules != null)) "Either `options` or `modules` must be provided"; let
+  inherit (pkgs) lib;
+  opts =
+    (
+      if (options != null)
+      then options
+      else (lib.evalModules {inherit modules;}).options
+    )
+    # Ensure that _module.args is not visible
+    // {_module.args.internal = lib.mkForce true;};
+
   optionsDoc = pkgs.nixosOptionsDoc {
-    options = options // {_module.args.internal = pkgs.lib.mkForce true;};
+    options = opts;
   };
 in
   pkgs.runCommand "options-doc-html" {
