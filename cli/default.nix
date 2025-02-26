@@ -3,6 +3,7 @@
   options,
   name ? "options-search",
   sourceMappings ? [],
+  warningsAreErrors ? true,
   ...
 }: let
   inherit (pkgs) lib;
@@ -40,6 +41,7 @@
       mapping.prefix + relativePath
     else path;
   optionsDoc = pkgs.nixosOptionsDoc {
+    inherit warningsAreErrors;
     options = options // {_module.args.internal = lib.mkForce true;};
     transformOptions = opt: opt // {declarations = lib.map transformDeclarations opt.declarations;};
   };
