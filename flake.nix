@@ -3,7 +3,7 @@
 
   outputs = {...}: {
     lib = {
-      optionsDocHtml = import ./doc.nix;
+      optionsDocHtml = import ./html;
     };
   };
 }

@@ -5,7 +5,7 @@
   ...
 }: let
   optionsDoc = pkgs.nixosOptionsDoc {
-    inherit options;
+    options = options // {_module.args.internal = pkgs.lib.mkForce true;};
   };
 in
   pkgs.runCommand "options-doc-html" {
