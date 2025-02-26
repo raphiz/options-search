@@ -1,27 +1,11 @@
 {
   pkgs,
-  modules,
+  options,
   title ? "Documentation",
   ...
 }: let
-  suppressModuleArgsDocs = {lib, ...}: {
-    options = {
-      _module.args = lib.mkOption {
-        internal = true;
-      };
-    };
-    config._module.check = false;
-  };
-  eval = pkgs.lib.evalModules {
-    modules =
-      modules
-      ++ [
-        suppressModuleArgsDocs
-      ];
-  };
-
   optionsDoc = pkgs.nixosOptionsDoc {
-    inherit (eval) options;
+    inherit options;
   };
 in
   pkgs.runCommand "options-doc-html" {
