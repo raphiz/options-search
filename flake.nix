@@ -43,6 +43,6 @@
       ];
     };
 
-    nixosModules = import ./modules {};
+    nixosModules.example = import ./example/module.nix;
   };
 }
