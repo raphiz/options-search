@@ -18,6 +18,11 @@
   in {
     # TODO: Add support to run it as follows:
     # options-search .#nixosConfigurations.example
+    #
+    # nix eval --json .#nixosConfigurations.example.options
+    # not sure if it makes sense for nixosModules - it does not work in many cases...
+    # > nix eval --json .#nixosModules.example --impure --apply 'module: let pkgs = import <nixpkgs> {}; in (pkgs.lib.evalModules {modules=[module];}).options'
+    # devshells would also be nice but I don't think that there is a standard way to get this - maybe for devshell.nix via .#devShells.<system>.default.passthru.config?
     lib = {
       optionsDocHtml = import ./html;
       mkOptionsSearch = import ./cli;
