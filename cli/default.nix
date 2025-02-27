@@ -18,28 +18,6 @@ assert pkgs.lib.assertMsg ((options != null) != (modules != null)) "Either `opti
     # Ensure that _module.args is not visible
     // {_module.args.internal = lib.mkForce true;};
 
-  # TODO: support mappings derived via lockfile
-  # but must not trigger lazy evaluation of inputs!
-  # Ideally, just provide a "flake" and "thing should just work"
-  # TODO: Log warnings for unknown flake input formats -> or just ignore?
-  # sourceMappings = [
-  #       {
-  #         # TODO: magically derive via lockfile
-  #         flakeInput = {
-  #           inherit flake;
-  #           name = "devshell";
-  #         };
-  #         # But can be done manually as well
-  #         source = flake.inputs.devshell.outPath;
-  #         prefix = "https://github.com/numtide/devshell/blob/${flake.inputs.devshell.rev}";
-  #       }
-  #       # TODO: Test "self"
-  #       {
-  #         source = flake.outPath;
-  #         prefix = "";
-  #       }
-  #     ];
-
   transformDeclarations = path: let
     matches = lib.filter (mapping: lib.hasPrefix mapping.source (toString path)) sourceMappings;
   in
