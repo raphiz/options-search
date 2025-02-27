@@ -35,7 +35,7 @@ in
   in {
     name = "options-search";
     devshell.startup.htmlDocs.text = ''
-      echo "Here is are links to the HTML documentation"
+      echo "Here are links to the HTML documentation"
       echo "- example module: ${exampleModuleHtml}/index.html"
       echo "- example NixOS host: ${exampleNixosHostHtml}/index.html"
     '';
