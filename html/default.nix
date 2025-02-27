@@ -11,7 +11,12 @@ assert pkgs.lib.assertMsg ((options != null) != (modules != null)) "Either `opti
     (
       if (options != null)
       then options
-      else (lib.evalModules {inherit modules;}).options
+      else
+        (lib.evalModules {
+          inherit modules;
+          specialArgs = {inherit pkgs;};
+        })
+        .options
     )
     # Ensure that _module.args is not visible
     // {_module.args.internal = lib.mkForce true;};
