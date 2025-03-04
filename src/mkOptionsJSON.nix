@@ -3,7 +3,7 @@
   lib ? pkgs.lib,
   options,
   sourceMappings ? [],
-  warningsAreErrors ? true,
+  warningsAreErrors ? false, # TODO: Make configurable
   ...
 }: let
   # Ensure that _module.args is not visible
