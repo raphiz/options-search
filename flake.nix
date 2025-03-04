@@ -33,6 +33,11 @@
       ];
     };
 
-    nixosModules.options-search = import ./module.nix self.lib;
+    nixosModules = let
+      options-search = import ./module.nix self.lib;
+    in {
+      inherit options-search;
+      default = options-search;
+    };
   };
 }

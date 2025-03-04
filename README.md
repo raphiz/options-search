@@ -22,7 +22,7 @@ then import the module
 ```nix
 nixpkgs.lib.modules.evalModules { # or your module-system function of choice, eg. nixpkgs.lib.nixosSystem
     modules = [
-      self.nixosModules.example
+      inputs.options-search.default
     ];
 };
 ```
